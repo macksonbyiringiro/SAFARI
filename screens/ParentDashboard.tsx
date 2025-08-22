@@ -21,6 +21,13 @@ const MicIcon: React.FC = () => (
   </svg>
 );
 
+const MicMusicIcon: React.FC = () => (
+    <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" viewBox="0 0 20 20" fill="currentColor">
+      <path d="M10 15a5 5 0 005-5V4a5 5 0 00-10 0v6a5 5 0 005 5z" />
+      <path d="M13.44 8.322a1 1 0 00-1.414-1.414L10.5 8.44A4.966 4.966 0 0010 8a4.966 4.966 0 00-.5.06l-1.526-1.534a1 1 0 10-1.414 1.414L8.086 9.5A3 3 0 007 10v1.114A4.369 4.369 0 006 11c-1.657 0-3 1.343-3 3s1.343 3 3 3 3-1.343 3-3v-1.89a3.001 3.001 0 001.914-2.732l1.526 1.534a1 1 0 101.414-1.414L13.44 8.322z" />
+    </svg>
+);
+
 
 const ParentDashboard: React.FC = () => {
   const { t, setScreen, playSound, musicVolume, setMusicVolume, sfxVolume, setSfxVolume, language, setLanguage, defaultLevel, setDefaultLevel } = useAppContext();
@@ -114,6 +121,18 @@ const ParentDashboard: React.FC = () => {
                     </div>
                 </div>
             </div>
+        </div>
+        
+        {/* Custom Music */}
+        <div className="bg-lime-50 p-4 rounded-lg shadow-inner">
+            <h2 className="text-xl font-bold text-yellow-900 mb-2">{t('customMusic')}</h2>
+            <p className="text-gray-600 mb-4">{t('recordMusicDesc')}</p>
+            <button 
+                onClick={() => { playSound('CLICK'); setScreen(Screen.RECORD_MUSIC); }}
+                className="w-full bg-orange-500 text-white font-bold p-3 rounded-lg shadow-md hover:bg-orange-600 transition-colors flex items-center justify-center gap-2">
+                <MicMusicIcon />
+                <span>{t('manageMusic')}</span>
+            </button>
         </div>
 
         {/* Custom Sounds */}

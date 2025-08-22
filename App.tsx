@@ -14,6 +14,7 @@ import QuizScreen from './screens/QuizScreen';
 import QuizResultsScreen from './screens/QuizResultsScreen';
 import RecordSoundScreen from './screens/RecordSoundScreen';
 import MusicBoxScreen from './screens/MusicBoxScreen';
+import RecordMusicScreen from './screens/RecordMusicScreen';
 
 function App() {
   const { screen, isMuted, musicVolume } = useAppContext();
@@ -27,6 +28,7 @@ function App() {
         case Screen.PASSWORD:
         case Screen.QUIZ_INTRO:
         case Screen.RECORD_SOUND:
+        case Screen.RECORD_MUSIC:
             soundService.playMusic('MENU');
             break;
         case Screen.LESSON:
@@ -69,6 +71,8 @@ function App() {
         return <RecordSoundScreen />;
       case Screen.MUSIC_BOX:
         return <MusicBoxScreen />;
+      case Screen.RECORD_MUSIC:
+        return <RecordMusicScreen />;
       default:
         return <HomeScreen />;
     }

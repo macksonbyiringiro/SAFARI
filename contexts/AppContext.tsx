@@ -29,6 +29,9 @@ interface AppContextType {
   customSounds: { [key: string]: string; };
   setCustomSound: (key: string, dataUrl: string) => void;
   deleteCustomSound: (key: string) => void;
+  customMusic: { [key in 'MENU' | 'LESSON']?: string };
+  setCustomMusic: (type: 'MENU' | 'LESSON', dataUrl: string) => void;
+  deleteCustomMusic: (type: 'MENU' | 'LESSON') => void;
 }
 
 const AppContext = createContext<AppContextType | undefined>(undefined);
@@ -65,11 +68,22 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
     return saved ? JSON.parse(saved) : {};
   });
 
+  const [customMusic, setCustomMusicState] = useState<{ [key in 'MENU' | 'LESSON']?: string }>(() => {
+    const saved = typeof window !== 'undefined' ? localStorage.getItem('customMusic') : null;
+    return saved ? JSON.parse(saved) : {};
+  });
+
   // Initialize sound service with volumes on component mount
   useEffect(() => {
     soundService.setMusicVolume(musicVolume);
     soundService.setSfxVolume(sfxVolume);
   }, []); // Empty dependency array ensures this runs only once
+  
+  // Update sound service with custom music tracks when they change
+  useEffect(() => {
+    soundService.setCustomMusic('MENU', customMusic.MENU || null);
+    soundService.setCustomMusic('LESSON', customMusic.LESSON || null);
+  }, [customMusic]);
 
   const t = useCallback((key: keyof LocalizationStrings): string => {
     return LOCALIZATION_STRINGS[key][language];
@@ -126,6 +140,23 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
           return newSounds;
       });
   }, []);
+  
+  const setCustomMusic = useCallback((type: 'MENU' | 'LESSON', dataUrl: string) => {
+    setCustomMusicState(prev => {
+        const newMusic = { ...prev, [type]: dataUrl };
+        localStorage.setItem('customMusic', JSON.stringify(newMusic));
+        return newMusic;
+    });
+  }, []);
+  
+  const deleteCustomMusic = useCallback((type: 'MENU' | 'LESSON') => {
+      setCustomMusicState(prev => {
+          const newMusic = { ...prev };
+          delete newMusic[type];
+          localStorage.setItem('customMusic', JSON.stringify(newMusic));
+          return newMusic;
+      });
+  }, []);
 
   const value = {
     language,
@@ -153,6 +184,9 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
     customSounds,
     setCustomSound,
     deleteCustomSound,
+    customMusic,
+    setCustomMusic,
+    deleteCustomMusic,
   };
 
   return <AppContext.Provider value={value}>{children}</AppContext.Provider>;

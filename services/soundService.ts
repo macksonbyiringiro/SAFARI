@@ -9,6 +9,10 @@ class SoundService {
   
   private musicInterval: number | null = null;
   private currentMusicType: 'MENU' | 'LESSON' | 'NONE' = 'NONE';
+  
+  private customMenuMusic: string | null = null;
+  private customLessonMusic: string | null = null;
+  private customMusicSource: AudioBufferSourceNode | null = null;
 
   constructor() {
     // We will initialize on the first user gesture.
@@ -70,6 +74,18 @@ class SoundService {
           this.sfxGain.gain.setValueAtTime(volume, this.audioContext!.currentTime);
       }
   }
+  
+  public setCustomMusic(type: 'MENU' | 'LESSON', dataUrl: string | null) {
+      if (type === 'MENU') {
+          this.customMenuMusic = dataUrl;
+      } else {
+          this.customLessonMusic = dataUrl;
+      }
+      // If music of this type is currently playing, restart it with the new track/or lack thereof
+      if (this.currentMusicType === type && !this.isMuted) {
+          this.playMusic(type);
+      }
+  }
 
   async playCustomSound(dataUrl: string) {
     this.initAudioContext();
@@ -86,6 +102,27 @@ class SoundService {
         source.start(0);
     } catch (error) {
         console.error("Error playing custom sound:", error);
+    }
+  }
+  
+  private async playCustomMusicTrack(dataUrl: string) {
+    if (!this.audioContext || !this.musicGain) return;
+    try {
+        const response = await fetch(dataUrl);
+        const arrayBuffer = await response.arrayBuffer();
+        const audioBuffer = await this.audioContext.decodeAudioData(arrayBuffer);
+        
+        const source = this.audioContext.createBufferSource();
+        source.buffer = audioBuffer;
+        source.loop = true; // Loop background music
+        source.connect(this.musicGain);
+        source.start(0);
+
+        this.customMusicSource = source; // Store reference to stop it later
+    } catch (error) {
+        console.error("Error playing custom music track:", error);
+        // Fallback to procedural music if custom fails
+        this.playProceduralMusic(this.currentMusicType);
     }
   }
 
@@ -178,6 +215,19 @@ class SoundService {
     this.stopMusic();
     if (this.isMuted || type === 'NONE' || !this.audioContext || !this.musicGain || this.audioContext.state !== 'running') return;
     
+    const customTrack = type === 'MENU' ? this.customMenuMusic : this.customLessonMusic;
+    if (customTrack) {
+        this.playCustomMusicTrack(customTrack);
+        return;
+    }
+    
+    this.playProceduralMusic(type);
+  }
+
+  private playProceduralMusic(type: 'MENU' | 'LESSON' | 'NONE') {
+    if (type === 'NONE') return;
+
+    if (!this.audioContext || !this.musicGain) return;
     // Note frequencies
     const C4 = 261.63, D4 = 293.66, E4 = 329.63, F4 = 349.23, G4 = 392.00, A4 = 440.00, B4 = 493.88;
     const C5 = 523.25;
@@ -234,6 +284,11 @@ class SoundService {
     if (this.musicInterval) {
       clearInterval(this.musicInterval);
       this.musicInterval = null;
+    }
+    if (this.customMusicSource) {
+        this.customMusicSource.stop();
+        this.customMusicSource.disconnect();
+        this.customMusicSource = null;
     }
   }
 }

@@ -15,6 +15,7 @@ export enum Screen {
   QUIZ_RESULTS = 'QUIZ_RESULTS',
   RECORD_SOUND = 'RECORD_SOUND',
   MUSIC_BOX = 'MUSIC_BOX',
+  RECORD_MUSIC = 'RECORD_MUSIC',
 }
 
 export enum LessonType {

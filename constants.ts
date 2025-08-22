@@ -280,6 +280,22 @@ export const LOCALIZATION_STRINGS: LocalizationStrings = {
       [Language.EN]: "Recording...",
       [Language.RW]: "Birimo gufatwa...",
   },
+  recordingFor: {
+    [Language.EN]: "Recording for {track}...",
+    [Language.RW]: "Urafata amajwi ya {track}...",
+  },
+  customMusic: {
+    [Language.EN]: "Custom Music",
+    [Language.RW]: "Umuziki Wihariye",
+  },
+  recordMusicDesc: {
+    [Language.EN]: "Record your own background music for the menu and lessons.",
+    [Language.RW]: "Fata umuziki wawe w'inyuma wo mu intangiriro n'uwo mu masomo.",
+  },
+  manageMusic: {
+    [Language.EN]: "Manage Music",
+    [Language.RW]: "Genzura Umuziki",
+  },
   
   // Music Box
   musicBox: {
