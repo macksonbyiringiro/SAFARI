@@ -11,7 +11,22 @@ const MonkeyIcon = () => (
 )
 
 const HomeScreen: React.FC = () => {
-    const { t, setScreen } = useAppContext();
+    const { t, setScreen, playSound } = useAppContext();
+
+    const handleStart = () => {
+        playSound('CLICK');
+        setScreen(Screen.LESSON_SELECTION);
+    };
+
+    const handleQuiz = () => {
+        playSound('CLICK');
+        setScreen(Screen.QUIZ_INTRO);
+    };
+
+    const handleParents = () => {
+        playSound('CLICK');
+        setScreen(Screen.PASSWORD);
+    };
 
     return (
         <div className="w-full h-full flex flex-col items-center justify-center p-8 bg-transparent text-center">
@@ -27,12 +42,17 @@ const HomeScreen: React.FC = () => {
 
             <div className="mt-12 space-y-5 w-full max-w-xs">
                 <button 
-                    onClick={() => setScreen(Screen.LESSON)} 
+                    onClick={handleStart} 
                     className="w-full bg-yellow-400 text-yellow-900 font-bold text-2xl py-4 rounded-full shadow-lg transform transition-all hover:scale-105 active:scale-95 border-b-8 border-yellow-500 active:border-b-2">
                     {t('startLesson')}
                 </button>
                 <button 
-                    onClick={() => setScreen(Screen.PASSWORD)} 
+                    onClick={handleQuiz} 
+                    className="w-full bg-blue-500 text-white font-bold text-2xl py-4 rounded-full shadow-lg transform transition-all hover:scale-105 active:scale-95 border-b-8 border-blue-700 active:border-b-2">
+                    {t('practiceQuiz')}
+                </button>
+                <button 
+                    onClick={handleParents} 
                     className="w-full bg-green-500 text-white font-bold text-xl py-3 rounded-full shadow-lg transform transition-all hover:scale-105 active:scale-95 border-b-8 border-green-700 active:border-b-2">
                     {t('parentsCorner')}
                 </button>

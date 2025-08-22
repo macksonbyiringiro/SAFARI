@@ -1,5 +1,7 @@
 {
   "name": "Math Safari – Umenya Imibare!",
   "description": "A fun, bilingual (Kinyarwanda/English) educational app for Rwandan children to learn basic math through interactive stories and games featuring local wildlife.",
-  "requestFramePermissions": []
+  "requestFramePermissions": [
+    "microphone"
+  ]
 }
