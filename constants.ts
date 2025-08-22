@@ -46,6 +46,10 @@ export const LOCALIZATION_STRINGS: LocalizationStrings = {
     [Language.EN]: "Back",
     [Language.RW]: "Subira Inyuma",
   },
+  click: {
+    [Language.EN]: "Click",
+    [Language.RW]: "Kanda",
+  },
 
   // New Lesson Selection Screen
   chooseLesson: {
@@ -275,6 +279,36 @@ export const LOCALIZATION_STRINGS: LocalizationStrings = {
   recording: {
       [Language.EN]: "Recording...",
       [Language.RW]: "Birimo gufatwa...",
+  },
+  
+  // Music Box
+  musicBox: {
+    [Language.EN]: "Music Box",
+    [Language.RW]: "Agasanduku k'Amajwi",
+  },
+  musicBoxDescription: {
+    [Language.EN]: "Listen to the music and sounds from the app.",
+    [Language.RW]: "Umva imiziki n'amajwi byo muri porogaramu.",
+  },
+  backgroundMusic: {
+    [Language.EN]: "Background Music",
+    [Language.RW]: "Umuziki w'Inyuma",
+  },
+  soundEffects: {
+    [Language.EN]: "Sound Effects",
+    [Language.RW]: "Amajwi",
+  },
+  menuMusic: {
+    [Language.EN]: "Menu Music",
+    [Language.RW]: "Umuziki wo mu Intangiriro",
+  },
+  lessonMusic: {
+    [Language.EN]: "Lesson Music",
+    [Language.RW]: "Umuziki w'Isomo",
+  },
+  stopMusic: {
+    [Language.EN]: "Stop Music",
+    [Language.RW]: "Hagarika Umuziki",
   },
 };
 

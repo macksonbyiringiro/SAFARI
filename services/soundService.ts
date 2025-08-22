@@ -230,7 +230,7 @@ class SoundService {
     this.musicInterval = window.setInterval(playNote, tempo);
   }
 
-  private stopMusic() {
+  public stopMusic() {
     if (this.musicInterval) {
       clearInterval(this.musicInterval);
       this.musicInterval = null;

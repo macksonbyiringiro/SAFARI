@@ -127,6 +127,18 @@ const ParentDashboard: React.FC = () => {
                 <span>{t('manageSounds')}</span>
             </button>
         </div>
+
+        {/* Music Box */}
+        <div className="bg-lime-50 p-4 rounded-lg shadow-inner">
+            <h2 className="text-xl font-bold text-yellow-900 mb-2">{t('musicBox')}</h2>
+            <p className="text-gray-600 mb-4">{t('musicBoxDescription')}</p>
+            <button 
+                onClick={() => { playSound('CLICK'); setScreen(Screen.MUSIC_BOX); }}
+                className="w-full bg-teal-500 text-white font-bold p-3 rounded-lg shadow-md hover:bg-teal-600 transition-colors flex items-center justify-center gap-2">
+                <MusicIcon />
+                <span>{t('musicBox')}</span>
+            </button>
+        </div>
       </div>
     </div>
   );

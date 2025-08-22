@@ -1,9 +1,9 @@
-
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useAppContext } from '../contexts/AppContext';
 import { Screen, GeneratedQuizQuestion } from '../types';
 import { generateQuiz } from '../services/geminiService';
 import NumberPad from '../components/NumberPad';
+import RestartButton from '../components/RestartButton';
 
 const LoadingSpinner = () => (
     <div className="w-16 h-16 border-8 border-yellow-400 border-t-transparent rounded-full animate-spin"></div>
@@ -19,23 +19,33 @@ const QuizScreen: React.FC = () => {
     const [feedback, setFeedback] = useState<'CORRECT' | 'INCORRECT' | null>(null);
     const [score, setScore] = useState(0);
 
-    useEffect(() => {
-        const fetchQuiz = async () => {
-            setIsLoading(true);
-            setError(null);
-            try {
-                const generatedQuiz = await generateQuiz();
-                setQuiz(generatedQuiz);
-                setTotalQuizQuestions(generatedQuiz.length);
-            } catch (err) {
-                setError(t('quizError'));
-                console.error(err);
-            } finally {
-                setIsLoading(false);
-            }
-        };
-        fetchQuiz();
+    const fetchQuiz = useCallback(async () => {
+        setIsLoading(true);
+        setError(null);
+        setQuiz(null); // Clear old quiz
+        setCurrentQuestionIndex(0);
+        setUserInput('');
+        setFeedback(null);
+        setScore(0);
+        try {
+            const generatedQuiz = await generateQuiz();
+            setQuiz(generatedQuiz);
+            setTotalQuizQuestions(generatedQuiz.length);
+        } catch (err) {
+            setError(t('quizError'));
+            console.error(err);
+        } finally {
+            setIsLoading(false);
+        }
     }, [t, setTotalQuizQuestions]);
+
+    useEffect(() => {
+        fetchQuiz();
+    }, [fetchQuiz]);
+
+    const handleRestart = () => {
+        fetchQuiz();
+    };
 
     const handleInput = (n: number) => {
         if (feedback) return;
@@ -97,6 +107,7 @@ const QuizScreen: React.FC = () => {
 
     return (
         <div className="w-full h-full flex flex-col items-center justify-around p-4 bg-lime-100/80">
+            <RestartButton onClick={handleRestart} className="top-4 right-4" />
             <div className="w-full text-center">
                 <p className="text-lg font-bold text-gray-600">{`Question ${currentQuestionIndex + 1} of ${quiz.length}`}</p>
                 <p className="text-2xl font-bold text-yellow-900 mt-4 leading-tight">{problem.question}</p>

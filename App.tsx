@@ -13,6 +13,7 @@ import QuizIntroScreen from './screens/QuizIntroScreen';
 import QuizScreen from './screens/QuizScreen';
 import QuizResultsScreen from './screens/QuizResultsScreen';
 import RecordSoundScreen from './screens/RecordSoundScreen';
+import MusicBoxScreen from './screens/MusicBoxScreen';
 
 function App() {
   const { screen, isMuted, musicVolume } = useAppContext();
@@ -34,6 +35,7 @@ function App() {
             break;
         case Screen.REWARD:
         case Screen.QUIZ_RESULTS:
+        case Screen.MUSIC_BOX:
             soundService.playMusic('NONE');
             break;
         default:
@@ -65,6 +67,8 @@ function App() {
         return <QuizResultsScreen />;
       case Screen.RECORD_SOUND:
         return <RecordSoundScreen />;
+      case Screen.MUSIC_BOX:
+        return <MusicBoxScreen />;
       default:
         return <HomeScreen />;
     }

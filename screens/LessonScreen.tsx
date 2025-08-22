@@ -1,9 +1,10 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useAppContext } from '../contexts/AppContext';
 import { Screen, LessonProblem, LessonType, Level, OperationProblem, CountingProblem } from '../types';
 import { LESSON_PROBLEMS } from '../constants';
 import NumberPad from '../components/NumberPad';
 import { soundService } from '../services/soundService';
+import RestartButton from '../components/RestartButton';
 
 // Helper to get problems
 const getProblemsForSession = (type: LessonType, level: Level): LessonProblem[] => {
@@ -92,14 +93,27 @@ const LessonScreen: React.FC = () => {
     const [userInput, setUserInput] = useState('');
     const [feedback, setFeedback] = useState<'CORRECT' | 'INCORRECT' | null>(null);
 
-    useEffect(() => {
+    const startLesson = useCallback(() => {
         if (currentLesson && currentLevel) {
             setProblems(getProblemsForSession(currentLesson.type, currentLevel));
+            setCurrentProblemIndex(0);
+            setUserInput('');
+            setFeedback(null);
+        }
+    }, [currentLesson, currentLevel]);
+
+    useEffect(() => {
+        if (currentLesson && currentLevel) {
+            startLesson();
         } else {
             // If no lesson/level is set, go back to selection.
             setScreen(Screen.LESSON_SELECTION);
         }
-    }, [currentLesson, currentLevel, setScreen]);
+    }, [currentLesson, currentLevel, setScreen, startLesson]);
+
+    const handleRestart = () => {
+        startLesson();
+    };
 
     if (!currentLesson || !currentLevel || problems.length === 0) {
         // Render loading or redirect
@@ -185,6 +199,7 @@ const LessonScreen: React.FC = () => {
 
     return (
         <div className="w-full h-full flex flex-col items-center justify-around p-4 bg-lime-100/80">
+            <RestartButton onClick={handleRestart} className="top-4 right-4" />
             <div className="w-full text-center">
                 <p className="text-xl font-bold text-yellow-900">{getQuestionText()}</p>
                 {subtext && <p className="text-md font-semibold text-green-700 animate-pulse mt-1">{subtext}</p>}
