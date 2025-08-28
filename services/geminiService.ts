@@ -1,18 +1,25 @@
 
+
 import { GoogleGenAI, Type } from "@google/genai";
 import { GeneratedQuizQuestion } from "../types";
 
-// IMPORTANT: In a real-world application, the API key would be stored securely
-// and not be hardcoded or exposed on the client-side. We are assuming
-// `process.env.API_KEY` is being properly replaced by a build tool.
-const API_KEY = process.env.API_KEY;
+// Lazily initialize the AI client to prevent app crash on load if API key is missing.
+let ai: GoogleGenAI | null = null;
 
-if (!API_KEY) {
-  // In a real app, you might want to disable the feature or show a message.
-  console.warn("API_KEY environment variable not set. Gemini API features will not work.");
+function getAiClient(): GoogleGenAI {
+  if (ai) {
+    return ai;
+  }
+
+  const apiKey = process.env.API_KEY;
+  if (!apiKey) {
+    console.error("API_KEY environment variable not set. Gemini API features will not work.");
+    throw new Error("API Key is not configured.");
+  }
+  
+  ai = new GoogleGenAI({ apiKey });
+  return ai;
 }
-
-const ai = new GoogleGenAI({ apiKey: API_KEY! });
 
 const quizSchema = {
     type: Type.ARRAY,
@@ -33,12 +40,9 @@ const quizSchema = {
 };
 
 export const generateQuiz = async (): Promise<GeneratedQuizQuestion[]> => {
-  if (!API_KEY) {
-    throw new Error("API Key is not configured.");
-  }
-
   try {
-    const response = await ai.models.generateContent({
+    const aiClient = getAiClient();
+    const response = await aiClient.models.generateContent({
         model: "gemini-2.5-flash",
         contents: "Generate 5 simple math word problems (addition and subtraction) for a 10-year-old child in Rwanda. Use items they would be familiar with, like bananas, francs, goats, or baskets.",
         config: {

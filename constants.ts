@@ -326,6 +326,68 @@ export const LOCALIZATION_STRINGS: LocalizationStrings = {
     [Language.EN]: "Stop Music",
     [Language.RW]: "Hagarika Umuziki",
   },
+
+  // Downloads / File Manager
+  downloads: {
+    [Language.EN]: "Offline Files",
+    [Language.RW]: "Amadosiye",
+  },
+  downloadsDescription: {
+    [Language.EN]: "Manage your offline music, videos, and documents.",
+    [Language.RW]: "Genzura umuziki, amashusho, n'inyandiko zawe.",
+  },
+  manageFiles: {
+      [Language.EN]: "Manage Files",
+      [Language.RW]: "Genzura Amadosiye",
+  },
+  activeTransfers: {
+    [Language.EN]: "Active Transfers",
+    [Language.RW]: "Ibiri gukorwa",
+  },
+  storedContent: {
+    [Language.EN]: "Stored Content",
+    [Language.RW]: "Ibibitse",
+  },
+  noFilesYet: {
+    [Language.EN]: "No files stored yet.",
+    [Language.RW]: "Nta dosiye irabitswe.",
+  },
+  download: {
+    [Language.EN]: "Download",
+    [Language.RW]: "Kurura",
+  },
+  delete: {
+    [Language.EN]: "Delete",
+    [Language.RW]: "Siba",
+  },
+  rename: {
+    [Language.EN]: "Rename",
+    [Language.RW]: "Hindura Izina",
+  },
+  cancel: {
+    [Language.EN]: "Cancel",
+    [Language.RW]: "Reka",
+  },
+  save: {
+    [Language.EN]: "Save",
+    [Language.RW]: "Bika",
+  },
+  enterNewName: {
+    [Language.EN]: "Enter new name",
+    [Language.RW]: "Shyiramo izina rishya",
+  },
+  confirmDelete: {
+    [Language.EN]: "Are you sure you want to delete '{name}'?",
+    [Language.RW]: "Urifuza gusiba '{name}'?",
+  },
+  lowStorageError: {
+      [Language.EN]: "Download failed due to low storage space.",
+      [Language.RW]: "Gukurura byanze kubera umwanya muto.",
+  },
+  downloadFailed: {
+      [Language.EN]: "Download failed",
+      [Language.RW]: "Gukurura byanze",
+  },
 };
 
 export const LESSONS: Lesson[] = [

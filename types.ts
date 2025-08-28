@@ -16,6 +16,7 @@ export enum Screen {
   RECORD_SOUND = 'RECORD_SOUND',
   MUSIC_BOX = 'MUSIC_BOX',
   RECORD_MUSIC = 'RECORD_MUSIC',
+  DOWNLOADS = 'DOWNLOADS',
 }
 
 export enum LessonType {
@@ -64,4 +65,24 @@ export interface LocalizationStrings {
 export interface GeneratedQuizQuestion {
     question: string;
     answer: number;
+}
+
+export interface StoredFile {
+  id: string;
+  name: string;
+  type: 'music' | 'video' | 'image' | 'document' | 'other';
+  source: 'download' | 'upload';
+  blob: Blob;
+  size: number;
+  timestamp: number;
+}
+
+export interface ActiveTransfer {
+  id: string;
+  name: string;
+  direction: 'download' | 'upload';
+  progress: number; // 0-100
+  totalSize: number;
+  transferredSize: number;
+  error?: string;
 }

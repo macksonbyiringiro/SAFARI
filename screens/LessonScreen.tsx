@@ -5,6 +5,7 @@ import { LESSON_PROBLEMS } from '../constants';
 import NumberPad from '../components/NumberPad';
 import { soundService } from '../services/soundService';
 import RestartButton from '../components/RestartButton';
+import BackButton from '../components/BackButton';
 
 // Helper to get problems
 const getProblemsForSession = (type: LessonType, level: Level): LessonProblem[] => {
@@ -25,7 +26,7 @@ const MusicNoteIcon = ({ className = 'w-12 h-12' }: { className?: string }) => (
     </svg>
 );
 
-const Tutorial: React.FC<{ lessonType: LessonType; onComplete: () => void }> = ({ lessonType, onComplete }) => {
+const Tutorial: React.FC<{ lessonType: LessonType; onComplete: () => void; onBack: () => void; }> = ({ lessonType, onComplete, onBack }) => {
     const { t, playSound } = useAppContext();
     const [step, setStep] = useState(0);
 
@@ -73,6 +74,7 @@ const Tutorial: React.FC<{ lessonType: LessonType; onComplete: () => void }> = (
     
     return (
         <div className="w-full h-full flex flex-col justify-between items-center p-8 text-center bg-lime-100">
+            <BackButton onClick={onBack} />
             <div className="flex-grow flex items-center justify-center">
                 {steps[step].img}
             </div>
@@ -113,6 +115,10 @@ const LessonScreen: React.FC = () => {
 
     const handleRestart = () => {
         startLesson();
+    };
+    
+    const handleBack = () => {
+        setScreen(Screen.LESSON_SELECTION);
     };
 
     if (!currentLesson || !currentLevel || problems.length === 0) {
@@ -192,14 +198,15 @@ const LessonScreen: React.FC = () => {
     }
 
     if (stage === 'TUTORIAL') {
-        return <Tutorial lessonType={currentLesson.type} onComplete={() => setStage('TASK')} />
+        return <Tutorial lessonType={currentLesson.type} onComplete={() => setStage('TASK')} onBack={handleBack} />
     }
     
     const subtext = getSubtext();
 
     return (
         <div className="w-full h-full flex flex-col items-center justify-around p-4 bg-lime-100/80">
-            <RestartButton onClick={handleRestart} className="top-4 right-4" />
+            <BackButton onClick={handleBack} />
+            <RestartButton onClick={handleRestart} />
             <div className="w-full text-center">
                 <p className="text-xl font-bold text-yellow-900">{getQuestionText()}</p>
                 {subtext && <p className="text-md font-semibold text-green-700 animate-pulse mt-1">{subtext}</p>}

@@ -1,4 +1,3 @@
-
 import React, { useEffect } from 'react';
 import { useAppContext } from '../contexts/AppContext';
 import { Screen } from '../types';
@@ -38,7 +37,11 @@ const QuizResultsScreen: React.FC = () => {
     return (
         <div className="w-full h-full flex flex-col items-center justify-center p-8 bg-lime-100/80 text-center">
             <h1 className="text-6xl font-black text-green-600 drop-shadow-lg mb-4">{t('quizComplete')}</h1>
-            <h2 className="text-3xl font-bold text-yellow-900 mb-8">{scoreMessage}</h2>
+            
+            {/* Made the score display more prominent */}
+            <div className="bg-white/50 backdrop-blur-sm rounded-2xl px-8 py-4 shadow-inner mb-8">
+                <h2 className="text-3xl font-bold text-yellow-900">{scoreMessage}</h2>
+            </div>
             
             <div className="flex space-x-4 h-24 items-center">
                 <Star delay={100} visible={starsToShow >= 1} />

@@ -4,10 +4,24 @@ import { Screen, GeneratedQuizQuestion } from '../types';
 import { generateQuiz } from '../services/geminiService';
 import NumberPad from '../components/NumberPad';
 import RestartButton from '../components/RestartButton';
+import BackButton from '../components/BackButton';
 
 const LoadingSpinner = () => (
     <div className="w-16 h-16 border-8 border-yellow-400 border-t-transparent rounded-full animate-spin"></div>
 );
+
+const CheckIcon: React.FC<{ className?: string }> = ({ className = "h-12 w-12" }) => (
+    <svg xmlns="http://www.w3.org/2000/svg" className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
+      <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+    </svg>
+);
+  
+const CrossIcon: React.FC<{ className?: string }> = ({ className = "h-12 w-12" }) => (
+    <svg xmlns="http://www.w3.org/2000/svg" className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
+      <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+    </svg>
+);
+
 
 const QuizScreen: React.FC = () => {
     const { t, setScreen, playSound, setQuizScore, setTotalQuizQuestions } = useAppContext();
@@ -45,6 +59,10 @@ const QuizScreen: React.FC = () => {
 
     const handleRestart = () => {
         fetchQuiz();
+    };
+
+    const handleBack = () => {
+        setScreen(Screen.QUIZ_INTRO);
     };
 
     const handleInput = (n: number) => {
@@ -107,7 +125,8 @@ const QuizScreen: React.FC = () => {
 
     return (
         <div className="w-full h-full flex flex-col items-center justify-around p-4 bg-lime-100/80">
-            <RestartButton onClick={handleRestart} className="top-4 right-4" />
+            <BackButton onClick={handleBack} />
+            <RestartButton onClick={handleRestart} />
             <div className="w-full text-center">
                 <p className="text-lg font-bold text-gray-600">{`Question ${currentQuestionIndex + 1} of ${quiz.length}`}</p>
                 <p className="text-2xl font-bold text-yellow-900 mt-4 leading-tight">{problem.question}</p>
@@ -117,9 +136,13 @@ const QuizScreen: React.FC = () => {
                 <div className="relative bg-white rounded-full h-20 flex items-center justify-center shadow-inner mb-4 overflow-hidden">
                     <span className={`text-5xl font-bold text-gray-700 transition-opacity duration-200 ${feedback ? 'opacity-0' : 'opacity-100'}`}>{userInput || '?'}</span>
                     {feedback && (
-                        <div className={`absolute inset-0 rounded-full flex items-center justify-center text-white font-bold text-2xl
-                            ${feedback === 'CORRECT' ? 'bg-green-500/90 animate-slow-zoom' : 'bg-red-500/90 animate-shake-lesson'}`}>
-                            {feedback === 'CORRECT' ? t('correct') : t('tryAgain')}
+                        <div
+                            className={`absolute inset-0 rounded-full flex items-center justify-center gap-4 text-white font-bold text-2xl
+                            ${feedback === 'CORRECT' ? 'bg-green-500/90 animate-slow-zoom' : 'bg-red-500/90 animate-shake-lesson'}`}
+                            role="alert"
+                        >
+                            {feedback === 'CORRECT' ? <CheckIcon /> : <CrossIcon />}
+                            <span>{feedback === 'CORRECT' ? t('correct') : t('tryAgain')}</span>
                         </div>
                     )}
                 </div>

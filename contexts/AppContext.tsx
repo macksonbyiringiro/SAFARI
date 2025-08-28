@@ -1,7 +1,8 @@
 import React, { createContext, useState, useContext, ReactNode, useCallback, useEffect } from 'react';
-import { Language, Screen, LocalizationStrings, Lesson, Level } from '../types';
+import { Language, Screen, LocalizationStrings, Lesson, Level, StoredFile, ActiveTransfer } from '../types';
 import { LOCALIZATION_STRINGS } from '../constants';
 import { soundService } from '../services/soundService';
+import { downloadService } from '../services/downloadService';
 
 interface AppContextType {
   language: Language;
@@ -32,6 +33,12 @@ interface AppContextType {
   customMusic: { [key in 'MENU' | 'LESSON']?: string };
   setCustomMusic: (type: 'MENU' | 'LESSON', dataUrl: string) => void;
   deleteCustomMusic: (type: 'MENU' | 'LESSON') => void;
+  storedFiles: StoredFile[];
+  activeTransfers: ActiveTransfer[];
+  downloadFile: (url: string, name: string, type: 'music' | 'video') => void;
+  uploadFiles: (files: FileList) => void;
+  deleteStoredFile: (id: string) => void;
+  renameStoredFile: (id: string, newName: string) => void;
 }
 
 const AppContext = createContext<AppContextType | undefined>(undefined);
@@ -72,6 +79,16 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
     const saved = typeof window !== 'undefined' ? localStorage.getItem('customMusic') : null;
     return saved ? JSON.parse(saved) : {};
   });
+  
+  const [storedFiles, setStoredFiles] = useState<StoredFile[]>([]);
+  const [activeTransfers, setActiveTransfers] = useState<ActiveTransfer[]>([]);
+
+  // Load stored files on init
+  useEffect(() => {
+    downloadService.getStoredFiles().then(files => {
+      setStoredFiles(files);
+    });
+  }, []);
 
   // Initialize sound service with volumes on component mount
   useEffect(() => {
@@ -158,6 +175,93 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
       });
   }, []);
 
+  const downloadFile = useCallback(async (url: string, name: string, type: 'music' | 'video') => {
+    const id = `${type}-${Date.now()}`;
+    const newDownload: ActiveTransfer = {
+        id,
+        name,
+        direction: 'download',
+        progress: 0,
+        transferredSize: 0,
+        totalSize: 0,
+    };
+    setActiveTransfers(prev => [...prev, newDownload]);
+
+    try {
+        await downloadService.downloadFile(id, url, name, type, ({ downloadedSize, totalSize }) => {
+            const progress = totalSize > 0 ? Math.round((downloadedSize / totalSize) * 100) : 0;
+            setActiveTransfers(prev => prev.map(d => 
+                d.id === id ? { ...d, transferredSize: downloadedSize, totalSize, progress } : d
+            ));
+        });
+
+        // On success
+        const updatedFiles = await downloadService.getStoredFiles();
+        setStoredFiles(updatedFiles);
+
+    } catch (error: any) {
+        console.error("Download failed in context", error);
+        // Show error on the download item
+        setActiveTransfers(prev => prev.map(d => 
+            d.id === id ? { ...d, error: error.message || "Download failed" } : d
+        ));
+    } finally {
+        // Remove from active transfers after a delay so user can see completion/error
+        setTimeout(() => {
+            setActiveTransfers(prev => prev.filter(d => d.id !== id));
+        }, 5000);
+    }
+  }, []);
+
+  const uploadFiles = useCallback(async (files: FileList) => {
+    for (const file of Array.from(files)) {
+        const id = `upload-${Date.now()}-${file.name}`;
+        const newTransfer: ActiveTransfer = {
+            id,
+            name: file.name,
+            direction: 'upload',
+            progress: 0,
+            transferredSize: 0,
+            totalSize: file.size,
+        };
+        setActiveTransfers(prev => [...prev, newTransfer]);
+
+        try {
+            await downloadService.uploadFile(file, ({ loaded, total }) => {
+                const progress = total > 0 ? Math.round((loaded / total) * 100) : 100;
+                setActiveTransfers(prev => prev.map(t =>
+                    t.id === id ? { ...t, transferredSize: loaded, totalSize: total, progress } : t
+                ));
+            });
+
+            const updatedFiles = await downloadService.getStoredFiles();
+            setStoredFiles(updatedFiles);
+
+        } catch (error: any) {
+            console.error("Upload failed in context", error);
+            setActiveTransfers(prev => prev.map(t =>
+                t.id === id ? { ...t, error: error.message || "Upload failed" } : t
+            ));
+        } finally {
+            setTimeout(() => {
+                setActiveTransfers(prev => prev.filter(t => t.id !== id));
+            }, 5000);
+        }
+    }
+  }, []);
+
+  const deleteStoredFile = useCallback(async (id: string) => {
+    await downloadService.deleteFile(id);
+    const updatedFiles = await downloadService.getStoredFiles();
+    setStoredFiles(updatedFiles);
+  }, []);
+
+  const renameStoredFile = useCallback(async (id: string, newName: string) => {
+    await downloadService.renameFile(id, newName);
+    const updatedFiles = await downloadService.getStoredFiles();
+    setStoredFiles(updatedFiles);
+  }, []);
+
   const value = {
     language,
     setLanguage,
@@ -187,6 +291,12 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
     customMusic,
     setCustomMusic,
     deleteCustomMusic,
+    storedFiles,
+    activeTransfers,
+    downloadFile,
+    uploadFiles,
+    deleteStoredFile,
+    renameStoredFile,
   };
 
   return <AppContext.Provider value={value}>{children}</AppContext.Provider>;
